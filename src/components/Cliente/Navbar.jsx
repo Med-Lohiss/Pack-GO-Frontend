@@ -1,0 +1,48 @@
+import React from "react";
+import { AppBar, Toolbar, IconButton, Box, useMediaQuery } from "@mui/material";
+import { Link } from "react-router-dom";
+import { useTheme } from "@mui/material/styles";
+import logo from "../../assets/logo.png";
+import {FaSignOutAlt } from 'react-icons/fa';
+
+const Navbar = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  return (
+    <AppBar
+      position="sticky"
+      elevation={0}
+      sx={{
+        backgroundColor: "#e3f2fd",
+        color: "#1976D2",
+        boxShadow: "none",
+      }}
+    >
+      <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+        <Box
+          component={Link}
+          to="/"
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            textDecoration: "none",
+          }}
+        >
+          <Box
+            component="img"
+            src={logo}
+            alt="Logo PackAndGO"
+            sx={{ height: 40 }}
+          />
+        </Box>
+
+        <Link to='/' className='logout-button' style={{ color: '#0d47a1' }}>
+          <FaSignOutAlt size={24} />
+        </Link>
+      </Toolbar>
+    </AppBar>
+  );
+};
+
+export default Navbar;
