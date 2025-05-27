@@ -17,8 +17,8 @@ export const AuthProvider = ({ children }) => {
       const { jwt, role, refreshToken, cuentaBloqueada } = response;
 
       if (cuentaBloqueada) {
-      throw new Error("Cuenta bloqueada. Contacta con la administración.");
-    }
+        throw new Error("Cuenta bloqueada. Contacta con la administración.");
+      }
 
       if (!jwt || !role) {
         throw new Error("Error en la autenticación. No se recibió el token o el rol.");
@@ -41,33 +41,8 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const loginWithGoogle = async (jwt) => {
-    try {
-      const response = await fetch(import.meta.env.VITE_GOOGLE_OAUTH2_URL, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${jwt}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      const data = await response.json();
-      const { email, role } = data;
-
-      if (!email || !role) {
-        throw new Error("Error en la autenticación con Google.");
-      }
-
-      const loggedUser = { email, role };
-      setUser(loggedUser);
-      localStorage.setItem("user", JSON.stringify(loggedUser));
-      localStorage.setItem("jwt", jwt);
-
-      return loggedUser;
-    } catch (error) {
-      console.error("Error en login con Google:", error.message);
-      throw new Error("Fallo en autenticación con Google");
-    }
+  const loginWithGoogle = (jwt) => {
+    localStorage.setItem("jwt", jwt);
   };
 
   const verifyAndRefreshToken = async () => {
@@ -105,7 +80,6 @@ export const AuthProvider = ({ children }) => {
     }
     verifyAndRefreshToken();
   }, []);
-
 
   return (
     <AuthContext.Provider value={{ user, login, loginWithGoogle, logout }}>

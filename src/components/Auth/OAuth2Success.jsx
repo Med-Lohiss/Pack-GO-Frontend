@@ -1,9 +1,7 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
 
 const OAuth2Success = () => {
-  const { loginWithGoogle } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -16,45 +14,52 @@ const OAuth2Success = () => {
       return;
     }
 
-    const handleLoginWithGoogle = async () => {
-      try {
-        const user = await loginWithGoogle(token);
+    localStorage.setItem("jwt", token);
 
-        const pendingToken = sessionStorage.getItem("pendingInvitationToken");
-        if (pendingToken) {
-          sessionStorage.removeItem("pendingInvitationToken");
-          navigate(`/invitacion/${pendingToken}`);
-          return;
-        }
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      const { email, rolUsuario: role } = payload;
 
-        if (user.role === "ADMIN") {
-          navigate("/admin/dashboard");
-        } else if (user.role === "EMPLEADO") {
-          navigate("/empleado/dashboard");
-        } else if (user.role === "CLIENTE") {
-          navigate("/cliente/dashboard");
-        } else {
-          navigate("/");
-        }
-      } catch (error) {
-        console.error("Error en login con Google:", error.message);
-        alert("Error al iniciar sesión con Google");
-        navigate("/auth");
+      const loggedUser = { email, role };
+      localStorage.setItem("user", JSON.stringify(loggedUser));
+      localStorage.setItem("role", role);
+
+      const pendingToken = sessionStorage.getItem("pendingInvitationToken");
+      if (pendingToken) {
+        sessionStorage.removeItem("pendingInvitationToken");
+        navigate(`/invitacion/${pendingToken}`);
+        return;
       }
-    };
 
-    handleLoginWithGoogle();
-  }, [loginWithGoogle, navigate]);
+      if (role === "ADMIN") {
+        navigate("/admin/dashboard");
+      } else if (role === "EMPLEADO") {
+        navigate("/empleado/dashboard");
+      } else if (role === "CLIENTE") {
+        navigate("/cliente/dashboard");
+      } else {
+        navigate("/");
+      }
+    } catch (err) {
+      console.error("Error al procesar el token JWT:", err);
+      alert("Token inválido. Intenta iniciar sesión de nuevo.");
+      navigate("/auth");
+    }
+  }, [navigate]);
 
   return (
-    <div style={{
-      width: "100vw",
-      height: "100vh",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center"
-    }}>
-      <p style={{ fontSize: "1.2rem", color: "#333" }}>Procesando inicio de sesión con Google...</p>
+    <div
+      style={{
+        width: "100vw",
+        height: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <p style={{ fontSize: "1.2rem", color: "#333" }}>
+        Procesando inicio de sesión con Google...
+      </p>
     </div>
   );
 };
