@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { setAuthToken } from "../../api/api";
 
 const OAuth2Success = () => {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ const OAuth2Success = () => {
     }
 
     localStorage.setItem("jwt", token);
+    setAuthToken(token);
 
     try {
       const payload = JSON.parse(atob(token.split(".")[1]));

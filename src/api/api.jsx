@@ -111,4 +111,6 @@ if (token && isJwtValid(token)) {
   setAuthToken(token);
 }
 
+export { setAuthToken };
+
 export default api;
