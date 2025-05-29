@@ -23,21 +23,47 @@ const Invitacion = () => {
     useEffect(() => {
         const gestionarInvitacion = async () => {
             try {
+                // Intentamos aceptar la invitación pública con el token
                 const { data: viaje } = await api.get('/cliente/invitaciones/public/aceptar', {
                     params: { token },
                 });
 
-                setExito(true);
-                setTimeout(() => navigate(`/invitado/viajes/${viaje.id}?token=${token}`), 3000);
+                // Si la invitación se aceptó correctamente, verificamos si el usuario tiene acceso al viaje
+                try {
+                    await api.get(`/cliente/viajes/${viaje.id}`); // Esto confirma si está autenticado y autorizado
+                    setExito(true);
+                    setTimeout(() => navigate(`/invitado/viajes/${viaje.id}?token=${token}`), 3000);
+                } catch (authError) {
+                    if (authError.response?.status === 401) {
+                        // No está autenticado: guardar token y mostrar diálogo de login
+                        sessionStorage.setItem('pendingInvitationToken', token);
+                        setMostrarDialogoLogin(true);
+                    } else {
+                        setError('No se pudo acceder al contenido del viaje.');
+                    }
+                }
             } catch (err) {
                 const mensaje = err.response?.data;
                 const status = err.response?.status;
 
                 if (status === 400 && mensaje === 'La invitación ya fue aceptada o está expirada.') {
                     try {
+                        // La invitación ya fue aceptada o está expirada: intentamos recuperar el viaje con el token
                         const { data: viaje } = await api.get(`/cliente/invitaciones/viaje-por-token/${token}`);
-                        setExito(true);
-                        setTimeout(() => navigate(`/invitado/viajes/${viaje.id}?token=${token}`), 3000);
+
+                        // Repetimos la verificación de acceso al viaje
+                        try {
+                            await api.get(`/cliente/viajes/${viaje.id}`);
+                            setExito(true);
+                            setTimeout(() => navigate(`/invitado/viajes/${viaje.id}?token=${token}`), 3000);
+                        } catch (authError) {
+                            if (authError.response?.status === 401) {
+                                sessionStorage.setItem('pendingInvitationToken', token);
+                                setMostrarDialogoLogin(true);
+                            } else {
+                                setError('No se pudo acceder al contenido del viaje.');
+                            }
+                        }
                         return;
                     } catch (fetchErr) {
                         setError('No se pudo recuperar el viaje, aunque la invitación ya fue aceptada.');
