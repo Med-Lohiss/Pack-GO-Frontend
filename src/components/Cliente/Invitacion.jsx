@@ -23,7 +23,6 @@ const Invitacion = () => {
     useEffect(() => {
         const gestionarInvitacion = async () => {
             try {
-                // Paso 1: Intentar aceptar invitación
                 const { data: viaje } = await api.get('/cliente/invitaciones/public/aceptar', {
                     params: { token },
                 });
@@ -34,12 +33,9 @@ const Invitacion = () => {
                 const mensaje = err.response?.data;
                 const status = err.response?.status;
 
-                // Paso 2: Si ya fue aceptada, obtener el viaje de todas formas
                 if (status === 400 && mensaje === 'La invitación ya fue aceptada o está expirada.') {
                     try {
-                        const { data: viaje } = await api.get(
-                            `/cliente/invitaciones/viaje-por-token/${token}`
-                        );
+                        const { data: viaje } = await api.get(`/cliente/invitaciones/viaje-por-token/${token}`);
                         setExito(true);
                         setTimeout(() => navigate(`/invitado/viajes/${viaje.id}?token=${token}`), 3000);
                         return;
@@ -47,7 +43,6 @@ const Invitacion = () => {
                         setError('No se pudo recuperar el viaje, aunque la invitación ya fue aceptada.');
                     }
                 } else if (status === 401) {
-                    // Mostrar diálogo antes de redirigir
                     sessionStorage.setItem('pendingInvitationToken', token);
                     setMostrarDialogoLogin(true);
                     return;
@@ -107,7 +102,7 @@ const Invitacion = () => {
                             🚀 ¡Estás a un paso de unirte a la aventura!
                         </Typography>
                         <Typography variant="body1" color="primary.dark" mb={3}>
-                            Para ver los viajes que han compartido contigo, regístrate o inicia sesión con Google.
+                            Para ver los viajes que han compartido contigo, regístrate o inicia sesión.
                         </Typography>
                         <Button
                             variant="contained"
@@ -119,7 +114,6 @@ const Invitacion = () => {
                         </Button>
                     </DialogContent>
                 </Dialog>
-
             )}
         </>
     );

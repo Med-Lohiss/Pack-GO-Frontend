@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import * as Components from "../components/AuthComponents";
@@ -9,6 +9,7 @@ import VerificarCodigo from "../components/Auth/verificarCodigo";
 import RestablecerContraseña from "../components/Auth/restablecerContraseña";
 import googleLogo from "../assets/google-logo.png";
 import Navbar from "../components/Viajes/Navbar";
+import api from "../api/api"; // Necesario para consultar el viaje por token
 
 const AuthPage = () => {
   const [signIn, setSignIn] = useState(true);
@@ -16,6 +17,28 @@ const AuthPage = () => {
   const [errorMessage, setErrorMessage] = useState(null);
   const { login } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkAndRedirectWithInvitationToken = async () => {
+      const justLoggedIn = sessionStorage.getItem("justLoggedIn");
+      const token = sessionStorage.getItem("pendingInvitationToken");
+
+      if (justLoggedIn && token) {
+        try {
+          const { data: viaje } = await api.get(`/cliente/invitaciones/viaje-por-token/${token}`);
+          sessionStorage.removeItem("pendingInvitationToken");
+          sessionStorage.removeItem("justLoggedIn");
+          navigate(`/invitado/viajes/${viaje.id}?token=${token}`);
+        } catch (err) {
+          console.error("Error al redirigir con token de invitación:", err);
+          sessionStorage.removeItem("pendingInvitationToken");
+          sessionStorage.removeItem("justLoggedIn");
+        }
+      }
+    };
+
+    checkAndRedirectWithInvitationToken();
+  }, [navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -32,11 +55,7 @@ const AuthPage = () => {
       }
 
       const pendingToken = sessionStorage.getItem("pendingInvitationToken");
-      if (pendingToken) {
-        sessionStorage.removeItem("pendingInvitationToken");
-        navigate(`/invitacion/${pendingToken}`);
-        return;
-      }
+      if (pendingToken) return; // La redirección la hará el useEffect
 
       if (user.role === "ADMIN") navigate("/admin/dashboard");
       else if (user.role === "EMPLEADO") navigate("/empleado/dashboard");
@@ -61,17 +80,11 @@ const AuthPage = () => {
 
     try {
       await apiRegister(nombre, email, password);
-
       const user = await login(email, password);
-
       sessionStorage.setItem("justLoggedIn", "true");
 
       const pendingToken = sessionStorage.getItem("pendingInvitationToken");
-      if (pendingToken) {
-        sessionStorage.removeItem("pendingInvitationToken");
-        navigate(`/invitacion/${pendingToken}`);
-        return;
-      }
+      if (pendingToken) return; // La redirección la hará el useEffect
 
       if (user.role === "ADMIN") navigate("/admin/dashboard");
       else if (user.role === "EMPLEADO") navigate("/empleado/dashboard");
