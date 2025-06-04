@@ -9,7 +9,8 @@ import VerificarCodigo from "../components/Auth/verificarCodigo";
 import RestablecerContraseña from "../components/Auth/restablecerContraseña";
 import googleLogo from "../assets/google-logo.png";
 import Navbar from "../components/Viajes/Navbar";
-import api from "../api/api"; // Necesario para consultar el viaje por token
+import api from "../api/api";
+import PasswordInput from "../components/Auth/PasswordInput";
 
 const AuthPage = () => {
   const [signIn, setSignIn] = useState(true);
@@ -55,7 +56,7 @@ const AuthPage = () => {
       }
 
       const pendingToken = sessionStorage.getItem("pendingInvitationToken");
-      if (pendingToken) return; // La redirección la hará el useEffect
+      if (pendingToken) return;
 
       if (user.role === "ADMIN") navigate("/admin/dashboard");
       else if (user.role === "EMPLEADO") navigate("/empleado/dashboard");
@@ -84,7 +85,7 @@ const AuthPage = () => {
       sessionStorage.setItem("justLoggedIn", "true");
 
       const pendingToken = sessionStorage.getItem("pendingInvitationToken");
-      if (pendingToken) return; // La redirección la hará el useEffect
+      if (pendingToken) return;
 
       if (user.role === "ADMIN") navigate("/admin/dashboard");
       else if (user.role === "EMPLEADO") navigate("/empleado/dashboard");
@@ -113,12 +114,13 @@ const AuthPage = () => {
       <div
         style={{
           width: "100vw",
-          height: "100vh",
+          minHeight: "100vh",
           backgroundColor: "#e3f2fd",
           display: "flex",
-          alignItems: "start",
+          alignItems: "flex-start",
           justifyContent: "center",
-          paddingTop: "20px"
+          paddingTop: "20px",
+          overflowX: "hidden"
         }}
       >
         <Components.Container>
@@ -128,7 +130,7 @@ const AuthPage = () => {
               <Components.Title>Regístrate</Components.Title>
               <Components.Input type="text" name="nombre" placeholder="Nombre" required />
               <Components.Input type="email" name="email" placeholder="Correo" required />
-              <Components.Input type="password" name="password" placeholder="Contraseña" required />
+              <PasswordInput name="password" placeholder="Contraseña" required minLength={6} />
               <Components.Button type="submit">Registrarse</Components.Button>
             </Components.Form>
           </Components.SignUpContainer>
@@ -145,7 +147,7 @@ const AuthPage = () => {
                 <Components.StyledImage src={logo} alt="PackAndGo" width="100" />
                 <Components.Title>Inicia Sesión</Components.Title>
                 <Components.Input type="email" name="email" placeholder="Correo" required />
-                <Components.Input type="password" name="password" placeholder="Contraseña" required />
+                <PasswordInput name="password" placeholder="Contraseña" required />
                 <Components.Button type="submit">Iniciar Sesión</Components.Button>
 
                 <p style={{ margin: "1px 0", color: "#999" }}>ó</p>

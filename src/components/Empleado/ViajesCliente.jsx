@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   Typography, Grid, Card, CardContent, Box, CardMedia,
-  Snackbar, Alert, Button
+  Snackbar, Alert, Button, Link
 } from '@mui/material';
 import {
   CalendarTodayOutlined,
@@ -69,11 +69,15 @@ const ViajesCliente = () => {
     <Box>
       <Box display="flex" alignItems="center" justifyContent="space-between" mb={3}>
         <Typography variant="h5">
-          Viajes públicos compartidos por otros clientes
+          Viajes compartidos por nuestros clientes
         </Typography>
         <Button
           variant="contained"
           onClick={() => setMostrarSoloPublicos(prev => !prev)}
+          sx={{
+            backgroundColor: '#065f46',
+            '&:hover': { backgroundColor: '#064e3b' }
+          }}
         >
           {mostrarSoloPublicos ? 'Mostrar Todos' : 'Mostrar solo públicos'}
         </Button>
@@ -85,8 +89,20 @@ const ViajesCliente = () => {
           const estadoViaje = obtenerEstadoViaje(viaje.fechaInicio, viaje.fechaFin);
 
           return (
-            <Grid item xs={12} md={6} key={viaje.id}>
-              <Card>
+            <Grid item xs={12} md={4} key={viaje.id}>
+              <Card
+                sx={{
+                  width: '300px',
+                  mx: 'auto',
+                  backgroundColor: '#ecfdf5',
+                  border: '1px solid #a7f3d0',
+                  borderRadius: 2,
+                  transition: 'background 0.2s ease',
+                  '&:hover': {
+                    backgroundColor: '#d1fae5',
+                  },
+                }}
+              >
                 <CardMedia
                   component="img"
                   height="200"
@@ -95,22 +111,24 @@ const ViajesCliente = () => {
                   sx={{ objectFit: 'cover' }}
                 />
                 <CardContent>
-                  <Typography variant="h6">{viaje.titulo}</Typography>
+                  <Typography variant="h6" sx={{ color: '#065f46', fontWeight: 600 }}>
+                    {viaje.titulo}
+                  </Typography>
 
                   <Box display="flex" alignItems="center" gap={1}>
-                    <LocationOnOutlined fontSize="small" />
+                    <LocationOnOutlined fontSize="small" sx={{ color: '#065f46' }} />
                     <Typography variant="body2">{viaje.ubicacion}</Typography>
                   </Box>
 
                   <Box display="flex" alignItems="center" gap={1}>
-                    <CalendarTodayOutlined fontSize="small" />
+                    <CalendarTodayOutlined fontSize="small" sx={{ color: '#065f46' }} />
                     <Typography variant="body2">
                       {formatearFecha(viaje.fechaInicio)} → {formatearFecha(viaje.fechaFin)}
                     </Typography>
                   </Box>
 
                   <Box display="flex" alignItems="center" gap={1}>
-                    <CategoryOutlined fontSize="small" />
+                    <CategoryOutlined fontSize="small" sx={{ color: '#065f46' }} />
                     <Typography variant="body2">{viaje.categoria}</Typography>
                   </Box>
 
@@ -119,14 +137,20 @@ const ViajesCliente = () => {
                   </Typography>
 
                   <Box mt={1}>
-                    <Typography
-                      variant="body2"
-                      color="primary"
-                      sx={{ cursor: 'pointer' }}
-                      onClick={() => navigate(`/empleado/viajes/${viaje.id}`)}
+                    <Link
+                      underline="hover"
+                      sx={{
+                        cursor: 'pointer',
+                        color: '#065f46',
+                        fontWeight: 500,
+                        '&:hover': {
+                          color: '#047857',
+                        }
+                      }}
+                      onClick={() => navigate(`/empleado/viajes/${viaje.id}/cliente`)}
                     >
                       + Ver detalles
-                    </Typography>
+                    </Link>
                   </Box>
                 </CardContent>
               </Card>

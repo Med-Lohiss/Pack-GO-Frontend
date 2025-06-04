@@ -1,4 +1,4 @@
-import { AppBar, Toolbar, IconButton, Box, Tooltip, useMediaQuery } from "@mui/material";
+import { AppBar, Toolbar, Box, Tooltip, useMediaQuery } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
 import logo from "../../assets/logo.png";
@@ -16,30 +16,41 @@ const Navbar = () => {
         backgroundColor: "#e3f2fd",
         color: "#1976D2",
         boxShadow: "none",
+        zIndex: 1300, // asegura que el tooltip quede por encima
       }}
     >
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-        <Box
-          component={Link}
-          to="/"
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            textDecoration: "none",
-          }}
-        >
+        <Tooltip title="Logo Pack & GO" arrow>
           <Box
-            component="img"
-            src={logo}
-            alt="Logo PackAndGO"
-            sx={{ height: 40 }}
-          />
-        </Box>
+            component={Link}
+            to="/"
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              textDecoration: "none",
+              cursor: "pointer", // mejora accesibilidad y usabilidad
+            }}
+          >
+            <Box
+              component="img"
+              src={logo}
+              alt="Logo PackAndGO"
+              sx={{ height: 40 }}
+            />
+          </Box>
+        </Tooltip>
 
         <Tooltip title="Cerrar sesión" arrow>
-          <Link to="/" className="logout-button" style={{ color: '#0d47a1' }} aria-label="Cerrar sesión">
-            <FaSignOutAlt size={24} />
-          </Link>
+          <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+            <Link
+              to="/"
+              className="logout-button"
+              style={{ color: '#0d47a1' }}
+              aria-label="Cerrar sesión"
+            >
+              <FaSignOutAlt size={24} />
+            </Link>
+          </span>
         </Tooltip>
       </Toolbar>
     </AppBar>

@@ -137,7 +137,7 @@ const ComentariosEmpleado = () => {
       await api.post('empleado/reportes', {
         comentarioId: comentarioAReportar.id,
         motivo,
-        contenido: detalle  // <-- Aquí está el cambio importante
+        contenido: detalle
       });
       cerrarDialogoReporte();
       alert("Reporte enviado correctamente.");
@@ -148,8 +148,20 @@ const ComentariosEmpleado = () => {
   };
 
   return (
-    <Box>
-      <Typography variant="h6" sx={{ mb: 2 }}>Comentarios</Typography>
+    <Box
+      sx={{
+        width: '100%',
+        mx: 'auto',
+        bgcolor: '#ecfdf5',  // fondo general verde muy claro
+        border: '1px solid #a7f3d0', // borde verde medio
+        borderRadius: 2,
+        p: 3,
+        boxSizing: 'border-box',
+      }}
+    >
+      <Typography variant="h6" sx={{ mb: 2, color: '#065f46' }}>
+        Comentarios
+      </Typography>
 
       <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
         <TextField
@@ -157,65 +169,158 @@ const ComentariosEmpleado = () => {
           fullWidth
           value={nuevoComentario}
           onChange={(e) => setNuevoComentario(e.target.value)}
+          sx={{
+            bgcolor: '#bbf7d0', // verde claro para texto activo (campo activo)
+            '& .MuiInputBase-root': {
+              color: '#065f46', // texto verde oscuro
+            }
+          }}
         />
-        <Button variant="contained" onClick={crearComentario}>Publicar</Button>
+        <Button
+          variant="contained"
+          onClick={crearComentario}
+          sx={{
+            bgcolor: '#065f46', // verde oscuro fondo
+            color: '#bbf7d0', // texto verde claro
+            '&:hover': { bgcolor: '#d1fae5', color: '#065f46' } // hover verde pastel
+          }}
+        >
+          Publicar
+        </Button>
       </Box>
 
       <List>
         {comentarios.map((comentario) => (
-          <ListItem key={comentario.id} sx={{ borderBottom: '1px solid #ccc', alignItems: 'flex-start' }}>
-            <Box sx={{ width: '100%' }}>
+          <ListItem
+            key={comentario.id}
+            sx={{
+              borderBottom: '1px solid #a7f3d0', // borde verde medio
+              alignItems: 'flex-start',
+              bgcolor: '#ecfdf5', // fondo verde muy claro
+              flexDirection: { xs: 'column', sm: 'row' }, // column en móvil/tablet, row en desktop
+              justifyContent: 'space-between',
+            }}
+          >
+            <Box sx={{ width: { xs: '100%', sm: '75%' }, mb: { xs: 1, sm: 0 } }}>
               {editando === comentario.id ? (
                 <>
-                  <Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
+                  <Box sx={{ display: 'flex', gap: 1, mb: 1, flexDirection: { xs: 'column', sm: 'row' } }}>
                     <TextField
                       fullWidth
                       value={contenidoEditado}
                       onChange={(e) => setContenidoEditado(e.target.value)}
+                      sx={{
+                        bgcolor: '#bbf7d0',
+                        '& .MuiInputBase-root': {
+                          color: '#065f46',
+                        }
+                      }}
                     />
-                    <Button variant="contained" onClick={() => guardarEdicion(comentario.id)}>Guardar</Button>
+                    <Button
+                      variant="contained"
+                      onClick={() => guardarEdicion(comentario.id)}
+                      sx={{
+                        bgcolor: '#065f46',
+                        color: '#bbf7d0',
+                        '&:hover': { bgcolor: '#d1fae5', color: '#065f46' }
+                      }}
+                    >
+                      Guardar
+                    </Button>
                   </Box>
                 </>
               ) : (
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Box>
                   <ListItemText
                     primary={comentario.contenido}
                     secondary={`Autor: ${comentario.autorNombre} | ${comentario.aprobado ? '✅ Aprobado' : '❌ No aprobado'}`}
+                    primaryTypographyProps={{ color: '#065f46' }}
+                    secondaryTypographyProps={{ color: '#065f46' }}
                   />
-                  <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                    <IconButton onClick={() => iniciarEdicion(comentario)}>
-                      <Edit />
-                    </IconButton>
-                    <IconButton onClick={() => eliminarComentario(comentario.id)}>
-                      <Delete />
-                    </IconButton>
-                    {comentario.aprobado ? (
-                      <IconButton onClick={() => desaprobarComentario(comentario)}>
-                        <Cancel color="error" />
-                      </IconButton>
-                    ) : (
-                      <IconButton onClick={() => aprobarComentario(comentario.id)}>
-                        <CheckCircle color="success" />
-                      </IconButton>
-                    )}
-                    <IconButton
-                      aria-label="Reportar comentario"
-                      onClick={() => abrirDialogoReporte(comentario)}
-                    >
-                      <Flag color="warning" />
-                    </IconButton>
-                  </Box>
                 </Box>
               )}
             </Box>
+
+            {editando !== comentario.id && (
+              <Box
+                sx={{
+                  display: 'flex',
+                  gap: 1,
+                  alignItems: 'center',
+                  width: { xs: '100%', sm: 'auto' },
+                  justifyContent: { xs: 'flex-start', sm: 'flex-end' },
+                  flexWrap: 'wrap',
+                  mt: { xs: 1, sm: 0 }
+                }}
+              >
+                <IconButton
+                  onClick={() => iniciarEdicion(comentario)}
+                  sx={{
+                    color: '#065f46',
+                    '&:hover': { bgcolor: '#d1fae5' }
+                  }}
+                  aria-label="Editar comentario"
+                >
+                  <Edit />
+                </IconButton>
+
+                <IconButton
+                  onClick={() => eliminarComentario(comentario.id)}
+                  sx={{
+                    color: '#065f46',
+                    '&:hover': { bgcolor: '#d1fae5' }
+                  }}
+                  aria-label="Eliminar comentario"
+                >
+                  <Delete />
+                </IconButton>
+
+                {comentario.aprobado ? (
+                  <IconButton
+                    onClick={() => desaprobarComentario(comentario)}
+                    sx={{
+                      color: '#ef4444', // rojo para desaprobar
+                      '&:hover': { bgcolor: '#d1fae5' }
+                    }}
+                    aria-label="Desaprobar comentario"
+                  >
+                    <Cancel />
+                  </IconButton>
+                ) : (
+                  <IconButton
+                    onClick={() => aprobarComentario(comentario.id)}
+                    sx={{
+                      color: '#065f46',
+                      '&:hover': { bgcolor: '#d1fae5' }
+                    }}
+                    aria-label="Aprobar comentario"
+                  >
+                    <CheckCircle />
+                  </IconButton>
+                )}
+
+                <IconButton
+                  aria-label="Reportar comentario"
+                  onClick={() => abrirDialogoReporte(comentario)}
+                  sx={{
+                    color: '#f59e0b', // amarillo para reporte
+                    '&:hover': { bgcolor: '#d1fae5' }
+                  }}
+                >
+                  <Flag />
+                </IconButton>
+              </Box>
+            )}
           </ListItem>
         ))}
       </List>
 
       {/* Dialogo para reportar comentario */}
       <Dialog open={openReporte} onClose={cerrarDialogoReporte}>
-        <DialogTitle>Reportar Comentario</DialogTitle>
-        <DialogContent>
+        <DialogTitle sx={{ bgcolor: '#065f46', color: '#bbf7d0' }}>
+          Reportar Comentario
+        </DialogTitle>
+        <DialogContent sx={{ bgcolor: '#ecfdf5' }}>
           <FormControl fullWidth sx={{ mt: 1 }}>
             <InputLabel id="motivo-label">Motivo</InputLabel>
             <Select
@@ -224,6 +329,7 @@ const ComentariosEmpleado = () => {
               label="Motivo"
               onChange={(e) => setMotivo(e.target.value)}
               required
+              sx={{ bgcolor: '#bbf7d0', color: '#065f46' }}
             >
               {motivosReporte.map((motivoOption) => (
                 <MenuItem key={motivoOption} value={motivoOption}>
@@ -238,14 +344,26 @@ const ComentariosEmpleado = () => {
             multiline
             rows={3}
             fullWidth
-            sx={{ mt: 2 }}
+            sx={{ mt: 2, bgcolor: '#bbf7d0', color: '#065f46' }}
             value={detalle}
             onChange={(e) => setDetalle(e.target.value)}
           />
         </DialogContent>
-        <DialogActions>
-          <Button onClick={cerrarDialogoReporte}>Cancelar</Button>
-          <Button variant="contained" onClick={enviarReporte}>Enviar</Button>
+        <DialogActions sx={{ bgcolor: '#ecfdf5' }}>
+          <Button onClick={cerrarDialogoReporte} sx={{ color: '#065f46' }}>
+            Cancelar
+          </Button>
+          <Button
+            variant="contained"
+            onClick={enviarReporte}
+            sx={{
+              bgcolor: '#065f46',
+              color: '#bbf7d0',
+              '&:hover': { bgcolor: '#d1fae5', color: '#065f46' }
+            }}
+          >
+            Enviar
+          </Button>
         </DialogActions>
       </Dialog>
     </Box>

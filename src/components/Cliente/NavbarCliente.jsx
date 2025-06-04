@@ -33,22 +33,24 @@ const NavbarCliente = () => {
           px: { xs: 2, md: 4 },
         }}
       >
-        <Box
-          component={Link}
-          to="/"
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            textDecoration: 'none',
-          }}
-        >
+        <Tooltip title="Logo Pack & GO" arrow>
           <Box
-            component="img"
-            src={logo}
-            alt="Logo Pack & GO"
-            sx={{ height: 40 }}
-          />
-        </Box>
+            component={Link}
+            to="/"
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              textDecoration: 'none',
+            }}
+          >
+            <Box
+              component="img"
+              src={logo}
+              alt="Logo Pack & GO"
+              sx={{ height: 40 }}
+            />
+          </Box>
+        </Tooltip>
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <NotificacionesCliente onPerfilClick={handlePerfilClick} />

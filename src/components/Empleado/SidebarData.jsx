@@ -1,6 +1,4 @@
-import React from 'react';
-import { FaBriefcase } from 'react-icons/fa';
-import { FaUserFriends } from 'react-icons/fa';
+import { FaBriefcase, FaUserFriends, FaCommentDots } from 'react-icons/fa';
 
 export const SidebarData = [
   {
@@ -13,6 +11,12 @@ export const SidebarData = [
     title: 'Viajes de Clientes',
     path: '/empleado/dashboard?tab=clientes',
     icon: <FaUserFriends />,
+    cName: 'nav-text',
+  },
+  {
+    title: 'Comentarios',
+    path: '/empleado/dashboard?tab=comentarios',
+    icon: <FaCommentDots />,
     cName: 'nav-text',
   }
 ];

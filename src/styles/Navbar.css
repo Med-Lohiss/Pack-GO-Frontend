@@ -1,11 +1,11 @@
 .navbar {
-  background-color: #060b26;
+  background-color: #065f46; /* mismo verde oscuro que sidebar */
   height: 50px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 20px;
-  color: white;
+  color: #f0fdf4; /* mismo color claro que sidebar */
   position: fixed;
   top: 0;
   left: 0;
@@ -31,16 +31,32 @@
 .menu-bars {
   font-size: 2rem;
   cursor: pointer;
+  color: #f0fdf4; /* ícono hamburguesa color claro */
+  transition: color 0.3s ease; /* suavizar cambio */
+  text-decoration: none; /* quitar subrayado si es link */
+}
+
+.menu-bars:hover {
+  color: #bbf7d0; /* verde claro acorde con sidebar */
+  text-decoration: none; /* asegurar que no aparezca subrayado */
 }
 
 .logout-button {
-  color: white;
+  color: #f0fdf4; /* ícono logout color claro */
   font-size: 1.5rem;
   margin-right: 50px;
+  transition: color 0.3s ease; /* para suavizar cambio */
+  text-decoration: none; /* para quitar subrayado si es link */
 }
 
+.logout-button:hover {
+  color: #bbf7d0; /* verde claro acorde con sidebar */
+  text-decoration: none; /* asegurar que no aparezca subrayado */
+}
+
+/* ===== Sidebar actualizado ===== */
 .nav-menu {
-  background-color: #060b26;
+  background-color: #065f46; /* emerald-700 */
   width: 250px;
   height: 100vh;
   position: fixed;
@@ -48,6 +64,7 @@
   left: -250px;
   transition: left 0.3s ease;
   z-index: 1000;
+  color: #f0fdf4;
 }
 
 .nav-menu.active {
@@ -62,16 +79,24 @@
 .nav-item {
   display: flex;
   align-items: center;
-  padding: 10px;
-  color: white;
+  padding: 10px 20px;
+  color: #f0fdf4; /* emerald-50 */
   text-decoration: none;
   cursor: pointer;
+  transition: background 0.2s ease;
 }
 
 .nav-item:hover {
-  background: #1a83ff;
+  background-color: rgba(5, 150, 105, 0.8);
+  border-radius: 4px;
 }
 
+.menu-bars svg,
+.nav-item svg {
+  color: #f0fdf4;
+}
+
+/* ===== Overlay ===== */
 .overlay {
   position: fixed;
   top: 0;
@@ -79,11 +104,10 @@
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.3);
-  z-index: 1050;
+  z-index: 900;
 }
 
 /* ===== Responsive ===== */
-
 @media (max-width: 1024px) {
   .navbar {
     height: 60px;

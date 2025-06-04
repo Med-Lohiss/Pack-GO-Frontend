@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
     Typography, Button, Grid, Card, CardContent, Dialog, DialogTitle,
     DialogContent, TextField, DialogActions, IconButton, Box, CardMedia, Link,
-    MenuItem, Select, InputLabel, FormControl, Snackbar, Alert
+    MenuItem, Select, InputLabel, FormControl, Snackbar, Alert, FormHelperText
 } from '@mui/material';
 import {
     DeleteOutline,
@@ -31,6 +31,7 @@ const Viajes = () => {
         fechaInicio: '', fechaFin: '', categoria: '',
         publico: false, imagen: ''
     });
+    const [formErrors, setFormErrors] = useState({});
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [compartirDialogOpen, setCompartirDialogOpen] = useState(false);
@@ -54,6 +55,7 @@ const Viajes = () => {
     }, []);
 
     const abrirDialog = (viaje = null) => {
+        setFormErrors({});
         if (viaje) {
             setEditando(viaje.id);
             setFormData({ ...viaje });
@@ -68,7 +70,22 @@ const Viajes = () => {
         setOpenDialog(true);
     };
 
-    const cerrarDialog = () => setOpenDialog(false);
+    const cerrarDialog = () => {
+        setOpenDialog(false);
+        setFormErrors({});
+    };
+
+    const validarFormulario = () => {
+        const errores = {};
+        if (!formData.titulo) errores.titulo = 'Este campo es obligatorio';
+        if (!formData.descripcion) errores.descripcion = 'Este campo es obligatorio';
+        if (!formData.ubicacion) errores.ubicacion = 'Este campo es obligatorio';
+        if (!formData.fechaInicio) errores.fechaInicio = 'Este campo es obligatorio';
+        if (!formData.fechaFin) errores.fechaFin = 'Este campo es obligatorio';
+        if (!formData.categoria) errores.categoria = 'Este campo es obligatorio';
+        setFormErrors(errores);
+        return Object.keys(errores).length === 0;
+    };
 
     const obtenerImagenPorUbicacion = async (ubicacion) => {
         try {
@@ -88,6 +105,7 @@ const Viajes = () => {
     };
 
     const guardarViaje = async () => {
+        if (!validarFormulario()) return;
         try {
             let imagenUrl = formData.imagen;
             if (!imagenUrl && formData.ubicacion) {
@@ -96,23 +114,17 @@ const Viajes = () => {
             const viajeData = { ...formData, imagenUrl: imagenUrl || '' };
 
             if (editando) {
-                // Actualizar viaje existente
                 await api.put(`/cliente/viajes/${editando}`, viajeData);
                 setSnackbarMessage('Viaje actualizado con éxito');
             } else {
-                // Crear nuevo viaje
                 const response = await api.post('/cliente/viajes', viajeData);
                 const viajeCreado = response.data;
-
-                // Crear presupuesto inicial para el viaje recién creado
                 const presupuestoInicial = {
                     totalEstimado: 0,
                     totalGastado: 0,
                     fechaActualizacion: null
                 };
-
                 await api.post(`/cliente/viajes/${viajeCreado.id}/presupuesto`, presupuestoInicial);
-
                 setSnackbarMessage('Viaje creado con éxito y presupuesto inicial generado');
             }
 
@@ -125,7 +137,6 @@ const Viajes = () => {
             setSnackbarOpen(true);
         }
     };
-
 
     const eliminarViaje = async () => {
         try {
@@ -203,14 +214,14 @@ const Viajes = () => {
     };
 
     return (
-        <Box >
+        <Box>
             <Box display="flex" justifyContent="flex-end" alignItems="center" mb={2}>
                 <Button startIcon={<AddOutlined />} variant="contained" onClick={() => abrirDialog()} color="primary">
                     Nuevo Viaje
                 </Button>
             </Box>
 
-            <Grid container spacing={2} justifyContent="center" >
+            <Grid container spacing={2} justifyContent="center">
                 {viajes.map((viaje) => {
                     const duracion = calcularDias(viaje.fechaInicio, viaje.fechaFin);
                     const estadoViaje = obtenerEstadoViaje(viaje.fechaInicio, viaje.fechaFin);
@@ -219,7 +230,7 @@ const Viajes = () => {
 
                     return (
                         <Grid item xs={12} md={4} key={viaje.id}>
-                            <Card sx={{ width: '300px', mx: 'auto' }}>
+                            <Card sx={{ width: '300px', mx: 'auto', backgroundColor: '#E3F2FD', borderRadius: 2 }}>
                                 <CardMedia
                                     component="img"
                                     height="200"
@@ -231,28 +242,23 @@ const Viajes = () => {
                                     <Typography variant="h6" color="primary">
                                         {viaje.titulo}
                                     </Typography>
-
                                     <Box display="flex" alignItems="center" gap={1}>
                                         <LocationOnOutlined fontSize="small" color="primary" />
-                                        <Typography variant="body2" color="textSecondary">{viaje.ubicacion}</Typography>
+                                        <Typography variant="body2">{viaje.ubicacion}</Typography>
                                     </Box>
-
                                     <Box display="flex" alignItems="center" gap={1}>
                                         <CalendarTodayOutlined fontSize="small" color="primary" />
-                                        <Typography variant="body2" color="textSecondary">
+                                        <Typography variant="body2">
                                             {fechaInicioFormatted} → {fechaFinFormatted}
                                         </Typography>
                                     </Box>
-
                                     <Box display="flex" alignItems="center" gap={1}>
                                         <CategoryOutlined fontSize="small" color="primary" />
-                                        <Typography variant="body2" color="textSecondary">{viaje.categoria}</Typography>
+                                        <Typography variant="body2">{viaje.categoria}</Typography>
                                     </Box>
-
                                     <Typography variant="body2" sx={{ fontStyle: 'italic', mt: 1 }}>
                                         {duracion} día{duracion > 1 ? 's' : ''} - {estadoViaje}
                                     </Typography>
-
                                     {!viaje.publico && (
                                         <Box mt={1}>
                                             <Link
@@ -268,7 +274,6 @@ const Viajes = () => {
                                             </Link>
                                         </Box>
                                     )}
-
                                     <Box mt={2} sx={{ borderTop: '1px solid #ddd', pt: 1, display: 'flex', justifyContent: 'space-between' }}>
                                         {!viaje.publico && (
                                             <>
@@ -286,7 +291,6 @@ const Viajes = () => {
                                             </>
                                         )}
                                     </Box>
-
                                 </CardContent>
                             </Card>
                         </Grid>
@@ -294,11 +298,13 @@ const Viajes = () => {
                 })}
             </Grid>
 
-            {/* Diálogos */}
-            <Dialog open={openDialog} onClose={cerrarDialog}>
-                <DialogTitle>{editando ? 'Editar Viaje' : 'Nuevo Viaje'}</DialogTitle>
+            <Dialog open={openDialog} onClose={cerrarDialog} fullWidth maxWidth="sm"
+                PaperProps={{ sx: { backgroundColor: '#E3F2FD', borderRadius: 3 } }}>
+                <DialogTitle sx={{ color: '#0D47A1', fontWeight: 'bold', textAlign: 'center' }}>
+                    {editando ? 'Editar Viaje' : 'Nuevo Viaje'}
+                </DialogTitle>
                 <DialogContent>
-                    {['titulo', 'descripcion', 'ubicacion'].map((campo) => (
+                    {['titulo', 'descripcion', 'ubicacion (Precisa)'].map((campo) => (
                         <TextField
                             key={campo}
                             margin="dense"
@@ -307,9 +313,11 @@ const Viajes = () => {
                             fullWidth
                             value={formData[campo] || ''}
                             onChange={(e) => setFormData({ ...formData, [campo]: e.target.value })}
+                            error={!!formErrors[campo]}
+                            helperText={formErrors[campo]}
                         />
                     ))}
-                    <FormControl fullWidth margin="dense">
+                    <FormControl fullWidth margin="dense" error={!!formErrors.categoria}>
                         <InputLabel>Categoría</InputLabel>
                         <Select
                             value={formData.categoria}
@@ -320,6 +328,7 @@ const Viajes = () => {
                                 <MenuItem key={cat} value={cat}>{cat}</MenuItem>
                             ))}
                         </Select>
+                        {formErrors.categoria && <FormHelperText>{formErrors.categoria}</FormHelperText>}
                     </FormControl>
                     <TextField
                         margin="dense"
@@ -329,6 +338,8 @@ const Viajes = () => {
                         InputLabelProps={{ shrink: true }}
                         value={formData.fechaInicio || ''}
                         onChange={(e) => setFormData({ ...formData, fechaInicio: e.target.value })}
+                        error={!!formErrors.fechaInicio}
+                        helperText={formErrors.fechaInicio}
                     />
                     <TextField
                         margin="dense"
@@ -338,6 +349,8 @@ const Viajes = () => {
                         InputLabelProps={{ shrink: true }}
                         value={formData.fechaFin || ''}
                         onChange={(e) => setFormData({ ...formData, fechaFin: e.target.value })}
+                        error={!!formErrors.fechaFin}
+                        helperText={formErrors.fechaFin}
                     />
                 </DialogContent>
                 <DialogActions>
@@ -367,7 +380,7 @@ const Viajes = () => {
                 <DialogTitle>¿Quieres compartir este viaje?</DialogTitle>
                 <DialogContent>
                     <Typography>
-                        Una vez compartido, este viaje podrá ser visible para otros usuarios de la aplicación y no podrás modificarlo, ni eliminarlo.
+                        Una vez compartido, este viaje podrá ser visible para otros usuarios de la aplicación y no podrás acceder a sus detalles, ni modificarlo ó eliminarlo.
                     </Typography>
                 </DialogContent>
                 <DialogActions>

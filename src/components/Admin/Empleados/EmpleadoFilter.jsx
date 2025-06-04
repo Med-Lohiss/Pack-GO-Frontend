@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { Box, TextField, Select, MenuItem, Button, Stack } from "@mui/material";
+import {
+  Box,
+  TextField,
+  Select,
+  MenuItem,
+  Button,
+  Stack,
+} from "@mui/material";
 
 const EmpleadoFilter = ({ onFilter }) => {
   const [filtro, setFiltro] = useState({});
@@ -15,21 +22,53 @@ const EmpleadoFilter = ({ onFilter }) => {
 
   return (
     <Box component="form" onSubmit={handleSubmit} mb={3}>
-      <Stack direction="row" spacing={2} flexWrap="wrap">
-        <TextField name="nombre" label="Nombre" variant="outlined" onChange={handleChange} />
-        <TextField name="apellido1" label="Apellido" variant="outlined" onChange={handleChange} />
-        <TextField name="dni" label="DNI" variant="outlined" onChange={handleChange} />
-        <Select name="ordenarPor" defaultValue="" displayEmpty onChange={handleChange}>
-          <MenuItem value="">Ordenar por</MenuItem>
-          <MenuItem value="salario">Salario</MenuItem>
-          <MenuItem value="fechaContratacion">Fecha de Contratación</MenuItem>
-        </Select>
-        <Select name="orden" defaultValue="" displayEmpty onChange={handleChange}>
-          <MenuItem value="">Orden</MenuItem>
-          <MenuItem value="asc">Ascendente</MenuItem>
-          <MenuItem value="desc">Descendente</MenuItem>
-        </Select>
-        <Button type="submit" variant="contained">Filtrar</Button>
+      <Stack
+        direction="row"
+        spacing={2}
+        useFlexGap
+        flexWrap="wrap"
+        alignItems="flex-start"
+        rowGap={2}
+      >
+        <TextField
+          name="nombre"
+          label="Nombre"
+          variant="outlined"
+          onChange={handleChange}
+          size="small"
+          sx={{ flexBasis: "150px", flexGrow: 1 }}
+        />
+        <TextField
+          name="apellido1"
+          label="Apellido"
+          variant="outlined"
+          onChange={handleChange}
+          size="small"
+          sx={{ flexBasis: "150px", flexGrow: 1 }}
+        />
+        <TextField
+          name="dni"
+          label="DNI"
+          variant="outlined"
+          onChange={handleChange}
+          size="small"
+          sx={{ flexBasis: "150px", flexGrow: 1 }}
+        />
+        <Button
+          type="submit"
+          variant="contained"
+          size="medium"
+          sx={{
+            flexBasis: "130px",
+            backgroundColor: "#065f46",
+            color: "#bbf7d0",
+            "&:hover": {
+              backgroundColor: "#047857",
+            },
+          }}
+        >
+          Filtrar
+        </Button>
       </Stack>
     </Box>
   );

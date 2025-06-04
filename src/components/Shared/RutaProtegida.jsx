@@ -1,11 +1,12 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 
 const RutaProtegida = ({ children, rolRequerido }) => {
+  const location = useLocation();
   const token = localStorage.getItem("jwt");
 
   if (!token) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/" replace state={{ from: location }} />;
   }
 
   try {
@@ -15,15 +16,14 @@ const RutaProtegida = ({ children, rolRequerido }) => {
     const tieneAcceso = roles.includes(rolRequerido);
 
     if (!tieneAcceso) {
-      return <Navigate to="/" replace />;
+      return <Navigate to="/" replace state={{ from: location }} />;
     }
 
-    return children;
+    return <>{children}</>;
   } catch (error) {
     console.error("Error al decodificar el token:", error);
-    return <Navigate to="/" replace />;
+    return <Navigate to="/" replace state={{ from: location }} />;
   }
 };
 
 export default RutaProtegida;
-

@@ -71,6 +71,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("role");
     Cookies.remove("jwt");
     Cookies.remove("refreshToken");
+    navigate("/auth");
   };
 
   useEffect(() => {

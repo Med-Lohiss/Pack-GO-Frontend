@@ -49,15 +49,24 @@ const EmpresaForm = ({ empresa, onChange }) => {
     >
       {fields.map((f) => (
         <TextField
-        key={f.name}
-        fullWidth
-        label={f.label}
-        name={f.name}
-        value={formData[f.name] || ""}
-        onChange={handleChange}
-        type={f.type || "text"}
-        slotProps={f.type === "date" ? { inputLabel: { shrink: true } } : undefined}
-      />      
+          key={f.name}
+          fullWidth
+          label={f.label}
+          name={f.name}
+          value={formData[f.name] || ""}
+          onChange={handleChange}
+          type={f.type || "text"}
+          InputLabelProps={f.type === "date" ? { shrink: true } : {}}
+          sx={{
+            "& label.Mui-focused": { color: "#047857" },
+            "& .MuiInput-underline:after": { borderBottomColor: "#047857" },
+            "& .MuiOutlinedInput-root": {
+              "& fieldset": { borderColor: "#d1fae5" },
+              "&:hover fieldset": { borderColor: "#65a30d" },
+              "&.Mui-focused fieldset": { borderColor: "#047857" },
+            },
+          }}
+        />
       ))}
     </Box>
   );

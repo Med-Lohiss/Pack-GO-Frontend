@@ -10,7 +10,7 @@ import AdminEmpresaPage from "./views/AdminEmpresaPage";
 import AdminReportes from "./views/AdminReportes";
 import ClienteList from "./components/Admin/Clientes/ClienteList";
 
-import EmpleadoDashboardPage from "./views/EmpleadoDashboardPage";
+import EmpleadoMenuPage from "./views/EmpleadoDashboardPage";
 import ClienteDashboardPage from "./views/ClienteDashboardPage";
 
 import RecuperarContraseña from "./components/Auth/recuperarContraseña";
@@ -28,7 +28,12 @@ import PerfilCliente from "./components/Cliente/PerfilCliente";
 
 import RutaProtegida from "./components/Shared/RutaProtegida";
 
-
+// Importamos las nuevas páginas informativas de Viajes
+import Contacto from "./components/Viajes/Contacto";
+import Careers from "./components/Viajes/Careers";
+import ComoFunciona from "./components/Viajes/ComoFunciona";
+import Privacidad from "./components/Viajes/Privacidad";
+import Terminos from "./components/Viajes/Terminos";
 
 const App = () => {
   return (
@@ -48,6 +53,12 @@ const App = () => {
         {/* Invitado */}
         <Route path="/invitado/viajes/:id" element={<ViajeDetalleInvitado />} />
 
+        {/* Páginas públicas informativas */}
+        <Route path="/contacto" element={<Contacto />} />
+        <Route path="/careers" element={<Careers />} />
+        <Route path="/como-funciona" element={<ComoFunciona />} />
+        <Route path="/privacidad" element={<Privacidad />} />
+        <Route path="/terminos" element={<Terminos />} />
 
         <Route
           path="/admin/dashboard"
@@ -96,7 +107,7 @@ const App = () => {
           path="/empleado/dashboard"
           element={
             <RutaProtegida rolRequerido="EMPLEADO">
-              <EmpleadoDashboardPage />
+              <EmpleadoMenuPage />
             </RutaProtegida>
           }
         />

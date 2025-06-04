@@ -94,22 +94,46 @@ const EmpresaList = () => {
 
   if (!empresa) {
     return (
-      <Paper sx={{ p: 3 }}>
-        <Typography variant="h5" mb={2}>
+      <Paper sx={{ p: 3, backgroundColor: "#f0fdf4" }}>
+        <Typography variant="h5" mb={2} sx={{ color: "#065f46", fontWeight: "bold" }}>
           Aún no se ha registrado ninguna empresa
         </Typography>
-        <Button variant="contained" onClick={handleCreate}>
+        <Button
+          variant="contained"
+          onClick={handleCreate}
+          sx={{
+            backgroundColor: "#065f46",
+            "&:hover": { backgroundColor: "#047857" },
+            borderRadius: 2,
+            textTransform: "none",
+            px: 3,
+            py: 1,
+          }}
+        >
           Crear Empresa
         </Button>
 
         <Dialog open={openForm} onClose={handleCloseForm} fullWidth maxWidth="sm">
-          <DialogTitle>Crear Empresa</DialogTitle>
+          <DialogTitle sx={{ color: "#065f46", fontWeight: "bold" }}>Crear Empresa</DialogTitle>
           <DialogContent>
             <EmpresaForm empresa={empresa} onChange={setEmpresa} />
           </DialogContent>
           <DialogActions>
             <Button onClick={handleCloseForm}>Cancelar</Button>
-            <Button onClick={handleFormSubmit} variant="contained">Guardar</Button>
+            <Button
+              onClick={handleFormSubmit}
+              variant="contained"
+              sx={{
+                backgroundColor: "#065f46",
+                "&:hover": { backgroundColor: "#047857" },
+                borderRadius: 2,
+                textTransform: "none",
+                px: 3,
+                py: 1,
+              }}
+            >
+              Guardar
+            </Button>
           </DialogActions>
         </Dialog>
       </Paper>
@@ -117,41 +141,73 @@ const EmpresaList = () => {
   }
 
   return (
-    <Paper sx={{ p: 3 }}>
+    <Paper sx={{ p: 3, backgroundColor: "#f0fdf4" }}>
       <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
-        <Typography variant="h5">Datos de la empresa</Typography>
-        <Button variant="contained" onClick={handleEdit}>
+        <Typography variant="h5" sx={{ color: "#065f46", fontWeight: "bold" }}>
+          Datos de la empresa
+        </Typography>
+        <Button
+          variant="contained"
+          onClick={handleEdit}
+          sx={{
+            backgroundColor: "#065f46",
+            "&:hover": { backgroundColor: "#047857" },
+            borderRadius: 2,
+            textTransform: "none",
+            px: 3,
+            py: 1,
+          }}
+        >
           Editar
         </Button>
       </Stack>
 
-      <Typography><strong>CIF:</strong> {empresa.cif}</Typography>
-      <Typography><strong>Denominación Social:</strong> {empresa.denominacionSocial}</Typography>
-      <Typography><strong>Domicilio:</strong> {empresa.domicilio}</Typography>
-      <Typography><strong>Fecha de Constitución:</strong> {formatDate(empresa.fechaConstitucion)}</Typography>
-      <Typography><strong>Dirección Web:</strong> {empresa.direccionWeb}</Typography>
-      <Typography><strong>Teléfono:</strong> {empresa.telefono}</Typography>
-      <Typography><strong>Email de Contacto:</strong> {empresa.emailContacto}</Typography>
+      <Typography><strong style={{ color: "#065f46" }}>CIF:</strong> {empresa.cif}</Typography>
+      <Typography><strong style={{ color: "#065f46" }}>Denominación Social:</strong> {empresa.denominacionSocial}</Typography>
+      <Typography><strong style={{ color: "#065f46" }}>Domicilio:</strong> {empresa.domicilio}</Typography>
+      <Typography><strong style={{ color: "#065f46" }}>Fecha de Constitución:</strong> {formatDate(empresa.fechaConstitucion)}</Typography>
+      <Typography><strong style={{ color: "#065f46" }}>Dirección Web:</strong> {empresa.direccionWeb}</Typography>
+      <Typography><strong style={{ color: "#065f46" }}>Teléfono:</strong> {empresa.telefono}</Typography>
+      <Typography><strong style={{ color: "#065f46" }}>Email de Contacto:</strong> {empresa.emailContacto}</Typography>
+
 
       <Dialog open={openForm} onClose={handleCloseForm} fullWidth maxWidth="sm">
-        <DialogTitle>{isCreating ? "Crear Empresa" : "Editar Empresa"}</DialogTitle>
+        <DialogTitle sx={{ color: "#065f46", fontWeight: "bold" }}>
+          {isCreating ? "Crear Empresa" : "Editar Empresa"}
+        </DialogTitle>
         <DialogContent>
           <EmpresaForm empresa={empresa} onChange={setEmpresa} />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseForm}>Cancelar</Button>
-          <Button onClick={handleFormSubmit} variant="contained">Guardar</Button>
+          <Button
+            onClick={handleFormSubmit}
+            variant="contained"
+            sx={{
+              backgroundColor: "#065f46",
+              "&:hover": { backgroundColor: "#047857" },
+              borderRadius: 2,
+              textTransform: "none",
+              px: 3,
+              py: 1,
+            }}
+          >
+            Guardar
+          </Button>
         </DialogActions>
       </Dialog>
-
 
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={4000}
         onClose={() => setSnackbarOpen(false)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
       >
-        <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarMessage.includes('Error') ? 'error' : 'success'} sx={{ fontSize: '1.1rem', padding: '12px 24px' }}>
+        <Alert
+          onClose={() => setSnackbarOpen(false)}
+          severity={snackbarMessage.includes("Error") ? "error" : "success"}
+          sx={{ fontSize: "1.1rem", padding: "12px 24px" }}
+        >
           {snackbarMessage}
         </Alert>
       </Snackbar>

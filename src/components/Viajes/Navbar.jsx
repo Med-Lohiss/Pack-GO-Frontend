@@ -1,5 +1,4 @@
-import React from "react";
-import { AppBar, Toolbar, IconButton, Box, useMediaQuery } from "@mui/material";
+import { AppBar, Toolbar, IconButton, Box, Tooltip, useMediaQuery } from "@mui/material";
 import { Link } from "react-router-dom";
 import { AiOutlineUser } from "react-icons/ai";
 import { useTheme } from "@mui/material/styles";
@@ -17,29 +16,37 @@ const Navbar = () => {
         backgroundColor: "#e3f2fd",
         color: "#1976D2",
         boxShadow: "none",
+        zIndex: 1300, // Asegura que los Tooltips se vean por encima
       }}
     >
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-        <Box
-          component={Link}
-          to="/"
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            textDecoration: "none",
-          }}
-        >
+        <Tooltip title="Logo Pack & GO" arrow>
           <Box
-            component="img"
-            src={logo}
-            alt="Logo PackAndGO"
-            sx={{ height: 40 }}
-          />
-        </Box>
+            component={Link}
+            to="/"
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              textDecoration: "none",
+              cursor: "pointer",
+            }}
+          >
+            <Box
+              component="img"
+              src={logo}
+              alt="Logo PackAndGO"
+              sx={{ height: 40 }}
+            />
+          </Box>
+        </Tooltip>
 
-        <IconButton component={Link} to="/auth" color="inherit">
-          <AiOutlineUser size={24} />
-        </IconButton>
+        <Tooltip title="Iniciar sesión" arrow>
+          <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+            <IconButton component={Link} to="/auth" color="inherit" aria-label="Iniciar sesión">
+              <AiOutlineUser size={24} />
+            </IconButton>
+          </span>
+        </Tooltip>
       </Toolbar>
     </AppBar>
   );

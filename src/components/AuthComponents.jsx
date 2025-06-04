@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 
-// Tonos azules
 const primaryBlue = "#1976d2";
 const secondaryBlue = "#1565c0";
 const accentBlue = "#64b5f6";
@@ -23,6 +22,7 @@ export const Container = styled.div`
     min-height: 100vh;
     width: 100%;
     position: relative;
+    margin: 30px;
   }
 `;
 

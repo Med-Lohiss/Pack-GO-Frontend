@@ -1,11 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import DestinationCard from './DestinationCard';
 import api from '../../api/api';
-import { Box, Typography } from '@mui/material';
+import {
+  Box,
+  Typography,
+  useTheme,
+  useMediaQuery
+} from '@mui/material';
 import ConfusoImage from '../../assets/confuso.png';
 
 const BentoGrid = ({ searchQuery, currentPage, setTotalFilteredViajes }) => {
   const [viajes, setViajes] = useState([]);
+
+  const theme = useTheme();
+  const isLgUp = useMediaQuery(theme.breakpoints.up('lg')); // ≥1200px
 
   useEffect(() => {
     const fetchViajes = async () => {
@@ -24,19 +32,17 @@ const BentoGrid = ({ searchQuery, currentPage, setTotalFilteredViajes }) => {
   const viajesPorPagina = 6;
 
   const filteredViajes = viajes.filter((viaje) => {
-  const query = searchQuery.toLowerCase().trim();
-  const ubicacion = viaje.ubicacion?.toLowerCase() || "";
-  const dias = Math.ceil((new Date(viaje.fechaFin) - new Date(viaje.fechaInicio)) / (1000 * 60 * 60 * 24)) + 1;
+    const query = searchQuery.toLowerCase().trim();
+    const ubicacion = viaje.ubicacion?.toLowerCase() || "";
+    const dias = Math.ceil((new Date(viaje.fechaFin) - new Date(viaje.fechaInicio)) / (1000 * 60 * 60 * 24)) + 1;
 
-  const coincideUbicacion = ubicacion.includes(query);
+    const coincideUbicacion = ubicacion.includes(query);
+    const matchNumero = query.match(/\d+/);
+    const numeroEnQuery = matchNumero ? parseInt(matchNumero[0], 10) : null;
+    const coincideDias = numeroEnQuery !== null && dias === numeroEnQuery;
 
-  const matchNumero = query.match(/\d+/);
-  const numeroEnQuery = matchNumero ? parseInt(matchNumero[0], 10) : null;
-
-  const coincideDias = numeroEnQuery !== null && dias === numeroEnQuery;
-
-  return coincideUbicacion || coincideDias;
-});
+    return coincideUbicacion || coincideDias;
+  });
 
   useEffect(() => {
     setTotalFilteredViajes(filteredViajes.length);
@@ -49,7 +55,7 @@ const BentoGrid = ({ searchQuery, currentPage, setTotalFilteredViajes }) => {
   const translateYValues = ['9rem', '4rem', '0rem', '9rem', '4rem', '0rem'];
 
   return (
-    <Box sx={{ width: '100%', overflow: 'visible' }}>
+    <Box sx={{ width: '100%' }}>
       {filteredViajes.length === 0 ? (
         <Box
           sx={{
@@ -78,7 +84,8 @@ const BentoGrid = ({ searchQuery, currentPage, setTotalFilteredViajes }) => {
             gridTemplateColumns: {
               xs: '1fr',
               sm: 'repeat(2, 1fr)',
-              md: 'repeat(3, 1fr)',
+              md: 'repeat(2, 1fr)',
+              lg: 'repeat(3, 1fr)',
             },
             gap: 4,
           }}
@@ -87,10 +94,9 @@ const BentoGrid = ({ searchQuery, currentPage, setTotalFilteredViajes }) => {
             <Box
               key={viaje.id}
               sx={{
-                transform: {
-                  xs: 'none',
-                  sm: `translateY(${translateYValues[index % translateYValues.length]})`,
-                },
+                transform: isLgUp
+                  ? `translateY(${translateYValues[index % translateYValues.length]})`
+                  : 'none',
                 transition: 'transform 0.3s ease',
                 display: 'flex',
                 justifyContent: 'center',

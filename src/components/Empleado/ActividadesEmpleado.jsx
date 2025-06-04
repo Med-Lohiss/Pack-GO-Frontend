@@ -17,7 +17,9 @@ import {
     InputLabel,
     FormControl,
     Snackbar,
-    Alert
+    Alert,
+    useTheme,
+    useMediaQuery
 } from '@mui/material';
 import {
     Edit,
@@ -27,13 +29,21 @@ import {
 } from '@mui/icons-material';
 import api from '../../api/api';
 
+const palette = {
+    fondoActivo: '#065f46', // verde oscuro
+    textoActivo: '#bbf7d0', // verde claro
+    hover: '#d1fae5', // verde pastel
+    fondoGeneral: '#ecfdf5', // verde muy claro
+    borde: '#a7f3d0' // verde medio
+};
+
 const tipoActividadOpciones = [
     'Transporte', 'Alojamiento', 'Restaurante', 'Comida rápida',
     'Excursión', 'Cultura', 'Ocio nocturno', 'Aventura',
     'Compras', 'Relajación'
 ];
 
-const ActividadesEmpleado = ({ viajeId, fechaInicio, fechaFin }) => {
+const ActividadesEmpleado = ({ viajeId, fechaInicio, fechaFin, publico = false, modoCliente = false }) => {
     const [actividades, setActividades] = useState([]);
     const [openDialog, setOpenDialog] = useState(false);
     const [editandoId, setEditandoId] = useState(null);
@@ -42,6 +52,9 @@ const ActividadesEmpleado = ({ viajeId, fechaInicio, fechaFin }) => {
     const [snackbar, setSnackbar] = useState(false);
     const [mensaje, setMensaje] = useState('');
     const [tipoAlerta, setTipoAlerta] = useState('success');
+
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     function inicializarFormData() {
         return {
@@ -139,47 +152,101 @@ const ActividadesEmpleado = ({ viajeId, fechaInicio, fechaFin }) => {
     };
 
     return (
-        <Box>
+        <Box sx={{ bgcolor: palette.fondoGeneral, p: 2, borderRadius: 2 }}>
             <Box display="flex" alignItems="center" mb={2}>
-                <ListAlt color="primary" />
-                <Typography variant="h6" ml={1}>Itinerario de actividades:</Typography>
+                <ListAlt sx={{ color: palette.fondoActivo }} />
+                <Typography variant="h6" ml={1} sx={{ color: palette.fondoActivo }}>
+                    Itinerario de actividades:
+                </Typography>
             </Box>
 
             <List dense>
                 {actividades.map(({ id, nombre, descripcion, fecha, hora, precio, tipoActividad }) => (
-                    <ListItem key={id}
-                        secondaryAction={
-                            <>
-                                <IconButton size="small" onClick={() => abrirDialog({ id, nombre, descripcion, fecha, hora, precio, tipoActividad })}>
-                                    <Edit />
-                                </IconButton>
-                                <IconButton size="small" color="error" onClick={() => eliminarActividad(id)}>
-                                    <Delete />
-                                </IconButton>
-                            </>
-                        }
+                    <ListItem
+                        key={id}
+                        sx={{
+                            flexDirection: isMobile ? 'column' : 'row',
+                            alignItems: isMobile ? 'flex-start' : 'center',
+                            bgcolor: palette.hover,
+                            border: `1px solid ${palette.borde}`,
+                            borderRadius: 1,
+                            mb: 1,
+                            p: 2,
+                            '&:hover': {
+                                bgcolor: palette.textoActivo,
+                                '& .MuiListItemText-primary, & .MuiListItemText-secondary': {
+                                    color: palette.fondoActivo
+                                },
+                                '& .icon-button': {
+                                    color: palette.fondoActivo
+                                }
+                            }
+                        }}
                     >
                         <ListItemText
                             primary={`Actividad: ${nombre}`}
+                            primaryTypographyProps={{ fontWeight: 'bold', color: palette.fondoActivo }}
+                            secondaryTypographyProps={{ component: 'div', style: { whiteSpace: 'pre-line', color: palette.fondoActivo } }}
                             secondary={
                                 `Tipo: ${tipoActividad}\n` +
                                 `Descripción: ${descripcion}\n` +
                                 `Precio por persona: ${precio}€\n` +
                                 `Fecha: ${fecha} | Hora: ${hora}`
                             }
-                            secondaryTypographyProps={{ component: 'div', style: { whiteSpace: 'pre-line' } }}
                         />
+                        {(!modoCliente || (modoCliente && publico)) && (
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    gap: 1,
+                                    mt: isMobile ? 1 : 0,
+                                    ml: isMobile ? 0 : 'auto'
+                                }}
+                            >
+                                <IconButton
+                                    size="small"
+                                    className="icon-button"
+                                    sx={{ color: palette.fondoActivo }}
+                                    onClick={() => abrirDialog({ id, nombre, descripcion, fecha, hora, precio, tipoActividad })}
+                                >
+                                    <Edit />
+                                </IconButton>
+                                <IconButton
+                                    size="small"
+                                    color="error"
+                                    onClick={() => eliminarActividad(id)}
+                                >
+                                    <Delete />
+                                </IconButton>
+                            </Box>
+                        )}
                     </ListItem>
                 ))}
             </List>
 
-            <Button startIcon={<AddOutlined />} variant="contained" onClick={() => abrirDialog()}>
-                Agregar Actividad
-            </Button>
+            {(!modoCliente || (modoCliente && publico)) && (
+                <Button
+                    startIcon={<AddOutlined />}
+                    variant="contained"
+                    onClick={() => abrirDialog()}
+                    sx={{
+                        bgcolor: palette.fondoActivo,
+                        color: palette.textoActivo,
+                        '&:hover': {
+                            bgcolor: palette.hover,
+                        },
+                        mt: 2
+                    }}
+                >
+                    Agregar Actividad
+                </Button>
+            )}
 
             <Dialog open={openDialog} onClose={cerrarDialog} fullWidth>
-                <DialogTitle>{editandoId ? 'Editar Actividad' : 'Nueva Actividad'}</DialogTitle>
-                <DialogContent>
+                <DialogTitle sx={{ bgcolor: palette.fondoActivo, color: palette.textoActivo }}>
+                    {editandoId ? 'Editar Actividad' : 'Nueva Actividad'}
+                </DialogTitle>
+                <DialogContent sx={{ bgcolor: palette.fondoGeneral }}>
                     <TextField
                         name="nombre"
                         margin="dense"
@@ -187,6 +254,15 @@ const ActividadesEmpleado = ({ viajeId, fechaInicio, fechaFin }) => {
                         fullWidth
                         value={formData.nombre}
                         onChange={handleInputChange}
+                        sx={{
+                            input: { color: palette.fondoActivo },
+                            label: { color: palette.fondoActivo },
+                            '& .MuiOutlinedInput-root': {
+                                '& fieldset': { borderColor: palette.borde },
+                                '&:hover fieldset': { borderColor: palette.fondoActivo },
+                                '&.Mui-focused fieldset': { borderColor: palette.fondoActivo },
+                            }
+                        }}
                     />
                     <TextField
                         name="descripcion"
@@ -197,8 +273,25 @@ const ActividadesEmpleado = ({ viajeId, fechaInicio, fechaFin }) => {
                         rows={3}
                         value={formData.descripcion}
                         onChange={handleInputChange}
+                        sx={{
+                            input: { color: palette.fondoActivo },
+                            label: { color: palette.fondoActivo },
+                            '& .MuiOutlinedInput-root': {
+                                '& fieldset': { borderColor: palette.borde },
+                                '&:hover fieldset': { borderColor: palette.fondoActivo },
+                                '&.Mui-focused fieldset': { borderColor: palette.fondoActivo },
+                            }
+                        }}
                     />
-                    <FormControl fullWidth margin="dense">
+                    <FormControl fullWidth margin="dense" sx={{
+                        '& label': { color: palette.fondoActivo },
+                        '& .MuiOutlinedInput-root': {
+                            '& fieldset': { borderColor: palette.borde },
+                            '&:hover fieldset': { borderColor: palette.fondoActivo },
+                            '&.Mui-focused fieldset': { borderColor: palette.fondoActivo },
+                        },
+                        '& .MuiSelect-select': { color: palette.fondoActivo }
+                    }}>
                         <InputLabel id="tipo-label">Tipo de actividad</InputLabel>
                         <Select
                             name="tipo"
@@ -227,6 +320,15 @@ const ActividadesEmpleado = ({ viajeId, fechaInicio, fechaFin }) => {
                                 max: fechaFin
                             }
                         }}
+                        sx={{
+                            input: { color: palette.fondoActivo },
+                            label: { color: palette.fondoActivo },
+                            '& .MuiOutlinedInput-root': {
+                                '& fieldset': { borderColor: palette.borde },
+                                '&:hover fieldset': { borderColor: palette.fondoActivo },
+                                '&.Mui-focused fieldset': { borderColor: palette.fondoActivo },
+                            }
+                        }}
                     />
                     <TextField
                         name="hora"
@@ -237,6 +339,15 @@ const ActividadesEmpleado = ({ viajeId, fechaInicio, fechaFin }) => {
                         value={formData.hora}
                         onChange={handleInputChange}
                         InputLabelProps={{ shrink: true }}
+                        sx={{
+                            input: { color: palette.fondoActivo },
+                            label: { color: palette.fondoActivo },
+                            '& .MuiOutlinedInput-root': {
+                                '& fieldset': { borderColor: palette.borde },
+                                '&:hover fieldset': { borderColor: palette.fondoActivo },
+                                '&.Mui-focused fieldset': { borderColor: palette.fondoActivo },
+                            }
+                        }}
                     />
                     <TextField
                         name="precio"
@@ -247,11 +358,24 @@ const ActividadesEmpleado = ({ viajeId, fechaInicio, fechaFin }) => {
                         value={formData.precio}
                         onChange={handleInputChange}
                         inputProps={{ min: 0 }}
+                        sx={{
+                            input: { color: palette.fondoActivo },
+                            label: { color: palette.fondoActivo },
+                            '& .MuiOutlinedInput-root': {
+                                '& fieldset': { borderColor: palette.borde },
+                                '&:hover fieldset': { borderColor: palette.fondoActivo },
+                                '&.Mui-focused fieldset': { borderColor: palette.fondoActivo },
+                            }
+                        }}
                     />
                 </DialogContent>
-                <DialogActions>
-                    <Button onClick={cerrarDialog}>Cancelar</Button>
-                    <Button onClick={guardarActividad} variant="contained">
+                <DialogActions sx={{ bgcolor: palette.fondoGeneral }}>
+                    <Button onClick={cerrarDialog} sx={{ color: palette.fondoActivo }}>Cancelar</Button>
+                    <Button onClick={guardarActividad} variant="contained" sx={{
+                        bgcolor: palette.fondoActivo,
+                        color: palette.textoActivo,
+                        '&:hover': { bgcolor: palette.hover }
+                    }}>
                         {editandoId ? 'Actualizar' : 'Crear'}
                     </Button>
                 </DialogActions>

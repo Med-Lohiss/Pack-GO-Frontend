@@ -1,5 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Paper, Typography, Stack, Snackbar, Alert, Box } from "@mui/material";
+import {
+  Paper,
+  Typography,
+  Stack,
+  Snackbar,
+  Alert,
+  Box,
+  IconButton,
+} from "@mui/material";
+import { ArrowBack } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
+
 import Navbar from "../Navbar";
 import ClienteFilter from "./ClienteFilter";
 import ClienteTable from "./ClienteTable";
@@ -9,6 +20,7 @@ const ClienteList = () => {
   const [clientes, setClientes] = useState([]);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const navigate = useNavigate();
 
   const normalizarClientes = (data) =>
     data.map((cliente) => ({
@@ -63,16 +75,61 @@ const ClienteList = () => {
   };
 
   return (
-    <>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        width: "100vw",
+        overflowX: "hidden",
+        backgroundColor: "#ecfdf5",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       <Navbar />
+
       <Box
         sx={{
-          maxWidth: 1200,
-          margin: "4rem auto",
-          px: { xs: 1, sm: 2, md: 3 },
+          display: "flex",
+          alignItems: "center",
+          px: 2,
+          mt: 9,
+          mb: 3,
+          width: "100%",
         }}
       >
-        <Paper sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
+        <IconButton
+          onClick={() => navigate("/admin/dashboard")}
+          sx={{
+            color: "#065f46",
+            "&:hover": {
+              backgroundColor: "#d1fae5",
+            },
+          }}
+        >
+          <ArrowBack />
+        </IconButton>
+      </Box>
+
+      <Box
+        sx={{
+          width: "100%",
+          maxWidth: "1200px",
+          margin: "0 auto",
+          px: { xs: 1, sm: 2, md: 3 },
+          flexGrow: 1,
+        }}
+      >
+        <Paper
+          sx={{
+            p: { xs: 2, sm: 3, md: 4 },
+            border: "1px solid #a7f3d0",
+            borderRadius: 2,
+            boxShadow: 3,
+            backgroundColor: "#ffffff",
+            width: "100%",
+            overflowX: "auto",
+          }}
+        >
           <Stack
             direction={{ xs: "column", sm: "row" }}
             justifyContent="space-between"
@@ -80,7 +137,6 @@ const ClienteList = () => {
             mb={2}
             spacing={1}
           >
-            <Typography variant="h5">Clientes</Typography>
           </Stack>
 
           <ClienteFilter onFilter={handleFilter} />
@@ -102,7 +158,7 @@ const ClienteList = () => {
           </Snackbar>
         </Paper>
       </Box>
-    </>
+    </Box>
   );
 };
 

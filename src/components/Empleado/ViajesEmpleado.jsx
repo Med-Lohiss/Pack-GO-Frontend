@@ -30,6 +30,11 @@ const ViajesEmpleado = () => {
     fechaInicio: '', fechaFin: '', categoria: '',
     imagen: ''
   });
+
+  // Estado para diálogo de confirmación de eliminación
+  const [confirmarEliminacionDialogOpen, setConfirmarEliminacionDialogOpen] = useState(false);
+  const [viajeAEliminar, setViajeAEliminar] = useState(null);
+
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const navigate = useNavigate();
@@ -62,6 +67,16 @@ const ViajesEmpleado = () => {
   };
 
   const cerrarDialog = () => setOpenDialog(false);
+
+  const abrirDialogConfirmacionEliminacion = (viaje) => {
+    setViajeAEliminar(viaje);
+    setConfirmarEliminacionDialogOpen(true);
+  };
+
+  const cerrarDialogConfirmacionEliminacion = () => {
+    setViajeAEliminar(null);
+    setConfirmarEliminacionDialogOpen(false);
+  };
 
   const obtenerImagenPorUbicacion = async (ubicacion) => {
     try {
@@ -112,9 +127,11 @@ const ViajesEmpleado = () => {
     }
   };
 
-  const eliminarViaje = async (id) => {
+  const eliminarViaje = async () => {
+    if (!viajeAEliminar) return;
+
     try {
-      await api.delete(`/empleado/viajes/${id}`);
+      await api.delete(`/empleado/viajes/${viajeAEliminar.id}`);
       setSnackbarMessage('Viaje eliminado con éxito');
       cargarViajes();
     } catch (error) {
@@ -122,6 +139,7 @@ const ViajesEmpleado = () => {
       setSnackbarMessage('Error al eliminar el viaje');
     } finally {
       setSnackbarOpen(true);
+      cerrarDialogConfirmacionEliminacion();
     }
   };
 
@@ -155,11 +173,21 @@ const ViajesEmpleado = () => {
   return (
     <Box>
       <Box display="flex" justifyContent="flex-end" alignItems="center" mb={2}>
-        <Button startIcon={<AddOutlined />} variant="contained" onClick={() => abrirDialog()}>
+        <Button
+          startIcon={<AddOutlined />}
+          variant="contained"
+          onClick={() => abrirDialog()}
+          sx={{
+            backgroundColor: '#065f46',
+            '&:hover': { backgroundColor: '#064e3b' },
+            color: '#ffffff',
+            textTransform: 'none',
+            fontWeight: 500,
+          }}
+        >
           Nuevo Viaje
         </Button>
       </Box>
-
       <Grid container spacing={2}>
         {viajes.map((viaje) => {
           const duracion = calcularDias(viaje.fechaInicio, viaje.fechaFin);
@@ -168,8 +196,20 @@ const ViajesEmpleado = () => {
           const fechaFinFormatted = formatearFecha(viaje.fechaFin);
 
           return (
-            <Grid item xs={12} md={6} key={viaje.id}>
-              <Card>
+            <Grid item xs={12} md={4} key={viaje.id}>
+              <Card
+                sx={{
+                  width: '300px',
+                  mx: 'auto',
+                  backgroundColor: '#ecfdf5',
+                  border: '1px solid #a7f3d0',
+                  borderRadius: 2,
+                  transition: 'background 0.2s ease',
+                  '&:hover': {
+                    backgroundColor: '#d1fae5',
+                  },
+                }}
+              >
                 <CardMedia
                   component="img"
                   height="200"
@@ -178,37 +218,30 @@ const ViajesEmpleado = () => {
                   sx={{ objectFit: 'cover' }}
                 />
                 <CardContent>
-                  <Typography variant="h6">{viaje.titulo}</Typography>
+                  <Typography variant="h6" sx={{ color: '#065f46', fontWeight: 600 }}>
+                    {viaje.titulo}
+                  </Typography>
 
                   <Box display="flex" alignItems="center" gap={1}>
-                    <LocationOnOutlined fontSize="small" />
+                    <LocationOnOutlined fontSize="small" sx={{ color: '#065f46' }} />
                     <Typography variant="body2">{viaje.ubicacion}</Typography>
                   </Box>
 
                   <Box display="flex" alignItems="center" gap={1}>
-                    <CalendarTodayOutlined fontSize="small" />
+                    <CalendarTodayOutlined fontSize="small" sx={{ color: '#065f46' }} />
                     <Typography variant="body2">
                       {fechaInicioFormatted} → {fechaFinFormatted}
                     </Typography>
                   </Box>
 
                   <Box display="flex" alignItems="center" gap={1}>
-                    <CategoryOutlined fontSize="small" />
+                    <CategoryOutlined fontSize="small" sx={{ color: '#065f46' }} />
                     <Typography variant="body2">{viaje.categoria}</Typography>
                   </Box>
 
                   <Typography variant="body2" sx={{ fontStyle: 'italic', mt: 1 }}>
                     {duracion} día{duracion > 1 ? 's' : ''} - {estadoViaje}
                   </Typography>
-
-                  <Box mt={2}>
-                    <IconButton onClick={() => abrirDialog(viaje)}>
-                      <EditOutlined />
-                    </IconButton>
-                    <IconButton color="error" onClick={() => eliminarViaje(viaje.id)}>
-                      <DeleteOutline />
-                    </IconButton>
-                  </Box>
 
                   <Box mt={1}>
                     <Link
@@ -218,9 +251,36 @@ const ViajesEmpleado = () => {
                         e.preventDefault();
                         navigate(`/empleado/viajes/${viaje.id}`);
                       }}
+                      sx={{
+                        cursor: 'pointer',
+                        color: '#065f46',
+                        fontWeight: 500,
+                        '&:hover': { color: '#047857' },
+                      }}
                     >
                       + Detalles
                     </Link>
+                  </Box>
+
+                  <Box
+                    mt={2}
+                    sx={{
+                      borderTop: '1px solid #d1d5db',
+                      pt: 1,
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                    }}
+                  >
+                    <IconButton onClick={() => abrirDialog(viaje)} sx={{ color: '#065f46' }} title="Editar">
+                      <EditOutlined />
+                    </IconButton>
+                    <IconButton
+                      sx={{ color: '#b91c1c' }}
+                      onClick={() => abrirDialogConfirmacionEliminacion(viaje)}
+                      title="Eliminar"
+                    >
+                      <DeleteOutline />
+                    </IconButton>
                   </Box>
                 </CardContent>
               </Card>
@@ -229,8 +289,30 @@ const ViajesEmpleado = () => {
         })}
       </Grid>
 
-      <Dialog open={openDialog} onClose={cerrarDialog}>
-        <DialogTitle>{editando ? 'Editar Viaje' : 'Nuevo Viaje'}</DialogTitle>
+      {/* Diálogo para crear/editar viaje con estilo verde */}
+      <Dialog
+        open={openDialog}
+        onClose={cerrarDialog}
+        fullWidth
+        maxWidth="sm"
+        PaperProps={{
+          sx: {
+            backgroundColor: '#ecfdf5',
+            borderRadius: 3,
+            border: '1px solid #a7f3d0',
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
+            color: '#065f46',
+            fontWeight: 'bold',
+            textAlign: 'center',
+          }}
+        >
+          {editando ? 'Editar Viaje' : 'Nuevo Viaje'}
+        </DialogTitle>
+
         <DialogContent>
           {['titulo', 'descripcion', 'ubicacion'].map((campo) => (
             <TextField
@@ -243,6 +325,7 @@ const ViajesEmpleado = () => {
               onChange={(e) => setFormData({ ...formData, [campo]: e.target.value })}
             />
           ))}
+
           <FormControl fullWidth margin="dense">
             <InputLabel>Categoría</InputLabel>
             <Select
@@ -255,6 +338,7 @@ const ViajesEmpleado = () => {
               ))}
             </Select>
           </FormControl>
+
           <TextField
             margin="dense"
             label="Fecha Inicio"
@@ -274,10 +358,57 @@ const ViajesEmpleado = () => {
             onChange={(e) => setFormData({ ...formData, fechaFin: e.target.value })}
           />
         </DialogContent>
+
         <DialogActions>
           <Button onClick={cerrarDialog}>Cancelar</Button>
-          <Button onClick={guardarViaje} variant="contained">
+          <Button
+            onClick={guardarViaje}
+            variant="contained"
+            sx={{
+              backgroundColor: '#065f46',
+              '&:hover': { backgroundColor: '#064e3b' },
+              color: '#ffffff',
+              textTransform: 'none',
+            }}
+          >
             {editando ? 'Actualizar' : 'Crear'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Diálogo de confirmación para eliminar viaje, con paleta verde */}
+      <Dialog
+        open={confirmarEliminacionDialogOpen}
+        onClose={cerrarDialogConfirmacionEliminacion}
+        PaperProps={{
+          sx: {
+            backgroundColor: '#ecfdf5',
+            borderRadius: 3,
+            border: '1px solid #a7f3d0',
+          },
+        }}
+      >
+        <DialogTitle sx={{ color: '#065f46', fontWeight: 'bold' }}>
+          Confirmación de eliminación
+        </DialogTitle>
+        <DialogContent>
+          <Typography sx={{ color: '#065f46' }}>
+            ¿Estás seguro de que quieres eliminar este viaje? Esta acción no se puede deshacer.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={cerrarDialogConfirmacionEliminacion}>Cancelar</Button>
+          <Button
+            onClick={eliminarViaje}
+            variant="contained"
+            sx={{
+              backgroundColor: '#b91c1c', // rojo fuerte para alerta eliminación
+              '&:hover': { backgroundColor: '#991b1b' },
+              color: '#fff',
+              textTransform: 'none',
+            }}
+          >
+            Eliminar
           </Button>
         </DialogActions>
       </Dialog>

@@ -37,6 +37,7 @@ const Actividades = ({ viajeId, fechaInicio, fechaFin }) => {
     const [openDialog, setOpenDialog] = useState(false);
     const [editandoId, setEditandoId] = useState(null);
     const [formData, setFormData] = useState(inicializarFormData());
+    const [errores, setErrores] = useState({});
     const [totalEstimado, setTotalEstimado] = useState(0);
     const [totalGastado, setTotalGastado] = useState(0);
     const [openPresupuesto, setOpenPresupuesto] = useState(false);
@@ -54,6 +55,21 @@ const Actividades = ({ viajeId, fechaInicio, fechaFin }) => {
             precio: ''
         };
     }
+
+    const validarFormulario = () => {
+        const errores = {};
+        if (!formData.nombre.trim()) errores.nombre = 'El nombre es obligatorio';
+        if (!formData.tipo) errores.tipo = 'El tipo de actividad es obligatorio';
+        if (!formData.fecha) errores.fecha = 'La fecha es obligatoria';
+        else if (formData.fecha < fechaInicio || formData.fecha > fechaFin)
+            errores.fecha = `Debe estar entre ${fechaInicio} y ${fechaFin}`;
+        if (formData.precio === '') errores.precio = 'El precio es obligatorio';
+        else if (isNaN(formData.precio) || Number(formData.precio) < 0)
+            errores.precio = 'Debe ser un número mayor o igual a 0';
+
+        setErrores(errores);
+        return Object.keys(errores).length === 0;
+    };
 
     const cargarPromediosVotos = async (actividades) => {
         try {
@@ -131,6 +147,7 @@ const Actividades = ({ viajeId, fechaInicio, fechaFin }) => {
             setEditandoId(null);
             setFormData(inicializarFormData());
         }
+        setErrores({});
         setOpenDialog(true);
     };
 
@@ -143,6 +160,8 @@ const Actividades = ({ viajeId, fechaInicio, fechaFin }) => {
     };
 
     const guardarActividad = async () => {
+        if (!validarFormulario()) return;
+
         const payload = {
             nombre: formData.nombre,
             descripcion: formData.descripcion,
@@ -182,6 +201,7 @@ const Actividades = ({ viajeId, fechaInicio, fechaFin }) => {
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
+        setErrores((prev) => ({ ...prev, [name]: '' }));
     };
 
     return (
@@ -214,18 +234,10 @@ const Actividades = ({ viajeId, fechaInicio, fechaFin }) => {
                                 }
                                 secondary={
                                     <>
-                                        <Typography variant="body2">
-                                            <strong style={{ color: '#0D47A1' }}>Tipo:</strong> {tipoActividad}
-                                        </Typography>
-                                        <Typography variant="body2">
-                                            <strong style={{ color: '#0D47A1' }}>Descripción:</strong> {descripcion}
-                                        </Typography>
-                                        <Typography variant="body2">
-                                            <strong style={{ color: '#0D47A1' }}>Precio por persona:</strong> {precio}€
-                                        </Typography>
-                                        <Typography variant="body2">
-                                            <strong style={{ color: '#0D47A1' }}>Fecha:</strong> {fecha} | <strong style={{ color: '#0D47A1' }}>Hora:</strong> {hora}
-                                        </Typography>
+                                        <Typography variant="body2"><strong style={{ color: '#0D47A1' }}>Tipo:</strong> {tipoActividad}</Typography>
+                                        <Typography variant="body2"><strong style={{ color: '#0D47A1' }}>Descripción:</strong> {descripcion}</Typography>
+                                        <Typography variant="body2"><strong style={{ color: '#0D47A1' }}>Precio por persona:</strong> {precio}€</Typography>
+                                        <Typography variant="body2"><strong style={{ color: '#0D47A1' }}>Fecha:</strong> {fecha} | <strong style={{ color: '#0D47A1' }}>Hora:</strong> {hora}</Typography>
                                         {promediosVotos[id] !== undefined && (
                                             <Box mt={1} display="flex" alignItems="center">
                                                 <Typography variant="body2" fontWeight="bold" mr={1} sx={{ color: 'primary.dark' }}>
@@ -248,14 +260,7 @@ const Actividades = ({ viajeId, fechaInicio, fechaFin }) => {
                                 secondaryTypographyProps={{ component: 'div', style: { whiteSpace: 'pre-line' } }}
                                 sx={{ width: '100%' }}
                             />
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    gap: 1,
-                                    mt: { xs: 1, sm: 0 },
-                                    alignSelf: { xs: 'flex-end', sm: 'center' }
-                                }}
-                            >
+                            <Box sx={{ display: 'flex', gap: 1, mt: { xs: 1, sm: 0 }, alignSelf: { xs: 'flex-end', sm: 'center' } }}>
                                 <IconButton size="small" onClick={() => abrirDialog({ id, nombre, descripcion, tipoActividad, fecha, hora, precio })}>
                                     <Edit />
                                 </IconButton>
@@ -283,26 +288,9 @@ const Actividades = ({ viajeId, fechaInicio, fechaFin }) => {
                 </Typography>
             </Box>
 
-            <Dialog
-                open={openDialog}
-                onClose={cerrarDialog}
-                fullWidth
-                PaperProps={{
-                    sx: {
-                        borderRadius: 3,
-                        backgroundColor: '#E3F2FD',
-                    },
-                }}
-            >
-                <DialogTitle
-                    sx={{
-                        backgroundColor: '#E3F2FD',
-                        color: '#0D47A1',
-                        fontWeight: 'bold',
-                        textAlign: 'center',
-                        py: 2,
-                    }}
-                >
+            <Dialog open={openDialog} onClose={cerrarDialog} fullWidth
+                PaperProps={{ sx: { borderRadius: 3, backgroundColor: '#E3F2FD' } }}>
+                <DialogTitle sx={{ backgroundColor: '#E3F2FD', color: '#0D47A1', fontWeight: 'bold', textAlign: 'center', py: 2 }}>
                     {editandoId ? 'Editar Actividad' : 'Nueva Actividad'}
                 </DialogTitle>
 
@@ -316,6 +304,8 @@ const Actividades = ({ viajeId, fechaInicio, fechaFin }) => {
                         margin="dense"
                         autoFocus
                         required
+                        error={!!errores.nombre}
+                        helperText={errores.nombre}
                     />
                     <TextField
                         label="Descripción"
@@ -327,7 +317,7 @@ const Actividades = ({ viajeId, fechaInicio, fechaFin }) => {
                         multiline
                         rows={2}
                     />
-                    <FormControl fullWidth margin="dense" required>
+                    <FormControl fullWidth margin="dense" required error={!!errores.tipo}>
                         <InputLabel id="tipo-label">Tipo de actividad</InputLabel>
                         <Select
                             labelId="tipo-label"
@@ -340,6 +330,7 @@ const Actividades = ({ viajeId, fechaInicio, fechaFin }) => {
                                 <MenuItem key={tipo} value={tipo}>{tipo}</MenuItem>
                             ))}
                         </Select>
+                        {errores.tipo && <Typography color="error" variant="caption">{errores.tipo}</Typography>}
                     </FormControl>
                     <TextField
                         label="Fecha"
@@ -350,11 +341,10 @@ const Actividades = ({ viajeId, fechaInicio, fechaFin }) => {
                         fullWidth
                         margin="dense"
                         InputLabelProps={{ shrink: true }}
-                        inputProps={{
-                            min: fechaInicio,
-                            max: fechaFin
-                        }}
+                        inputProps={{ min: fechaInicio, max: fechaFin }}
                         required
+                        error={!!errores.fecha}
+                        helperText={errores.fecha}
                     />
                     <TextField
                         label="Hora"
@@ -376,6 +366,8 @@ const Actividades = ({ viajeId, fechaInicio, fechaFin }) => {
                         margin="dense"
                         inputProps={{ min: 0, step: 0.01 }}
                         required
+                        error={!!errores.precio}
+                        helperText={errores.precio}
                     />
                 </DialogContent>
 

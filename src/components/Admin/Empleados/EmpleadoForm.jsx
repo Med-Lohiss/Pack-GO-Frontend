@@ -92,6 +92,23 @@ const EmpleadoForm = ({ empleado, onChange, isEdit }) => {
             value={formData[f.name] || ""}
             onChange={handleChange}
             InputLabelProps={f.type === "date" ? { shrink: true } : {}}
+            sx={{
+              "& label": { color: "#065f46" },
+              "& input": {
+                backgroundColor: "#ffffff",
+              },
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  borderColor: "#a7f3d0",
+                },
+                "&:hover fieldset": {
+                  borderColor: "#10b981",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "#065f46",
+                },
+              },
+            }}
           />
         </Grid>
       ))}

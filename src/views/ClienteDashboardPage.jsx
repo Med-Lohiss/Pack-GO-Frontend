@@ -5,7 +5,7 @@ import ViajesInvitado from '../components/Cliente/ViajesInvitado';
 import ListaChats from '../components/Cliente/ListaChats';
 import NavbarCliente from '../components/Cliente/NavbarCliente';
 import api from '../api/api';
-import fondo from '../assets/fondo.jpg'; // Imagen de fondo
+import fondo from '../assets/fondo.jpg';
 
 const ClienteDashboardPage = () => {
   const [tabIndex, setTabIndex] = useState(0);

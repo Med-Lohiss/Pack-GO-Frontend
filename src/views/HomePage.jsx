@@ -111,7 +111,6 @@ const HomePage = () => {
         </Container>
       </Box>
 
-      {/* Search Bar Section */}
       <Container
         maxWidth="md"
         sx={{
@@ -337,24 +336,24 @@ const HomePage = () => {
                   </Typography>
                   <ul style={{ listStyle: "none", padding: 0, marginTop: "16px" }}>
                     <li>
-                      <Link to="/destinos/paris" style={{ color: "#fff", textDecoration: "none" }}>
+                      <a href="#" onClick={(e) => e.preventDefault()} style={{ color: "#fff", textDecoration: "none", cursor: "pointer" }}>
                         París
-                      </Link>
+                      </a>
                     </li>
                     <li>
-                      <Link to="/destinos/rome" style={{ color: "#fff", textDecoration: "none" }}>
+                      <a href="#" onClick={(e) => e.preventDefault()} style={{ color: "#fff", textDecoration: "none", cursor: "pointer" }}>
                         Roma
-                      </Link>
+                      </a>
                     </li>
                     <li>
-                      <Link to="/destinos/new-york" style={{ color: "#fff", textDecoration: "none" }}>
+                      <a href="#" onClick={(e) => e.preventDefault()} style={{ color: "#fff", textDecoration: "none", cursor: "pointer" }}>
                         Nueva York
-                      </Link>
+                      </a>
                     </li>
                     <li>
-                      <Link to="/destinos/istanbul" style={{ color: "#fff", textDecoration: "none" }}>
+                      <a href="#" onClick={(e) => e.preventDefault()} style={{ color: "#fff", textDecoration: "none", cursor: "pointer" }}>
                         Barcelona
-                      </Link>
+                      </a>
                     </li>
                   </ul>
                 </Grid>

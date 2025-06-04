@@ -120,7 +120,7 @@ const ViajeDetalle = () => {
   const fechaFinFormatted = dayjs(viaje.fechaFin).format('YYYY-MM-DD');
 
   return (
-    <Box 
+    <Box
       sx={{
         backgroundColor: '#e3f2fd',
         minHeight: '100vh',
@@ -255,6 +255,11 @@ const ViajeDetalle = () => {
               fullWidth
               label="Email del invitado"
               variant="outlined"
+              type="email"
+              autoComplete="email"
+              inputProps={{
+                autoCapitalize: 'none',
+              }}
               sx={{
                 mt: 1,
                 '& .MuiOutlinedInput-root': {
@@ -265,6 +270,7 @@ const ViajeDetalle = () => {
               value={emailInvitado}
               onChange={(e) => setEmailInvitado(e.target.value)}
             />
+
             {error && <Typography color="error" mt={1}>{error}</Typography>}
           </DialogContent>
           <DialogActions sx={{ px: 3, pb: 2 }}>
