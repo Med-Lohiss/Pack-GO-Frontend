@@ -10,6 +10,7 @@ const PasswordWrapper = styled.div`
 
 const StyledInput = styled.input`
   background-color: #e3f2fd;
+  color: #000;
   border: none;
   padding: 12px 15px;
   margin: 8px 0;

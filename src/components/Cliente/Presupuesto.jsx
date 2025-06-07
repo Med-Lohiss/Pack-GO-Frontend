@@ -98,7 +98,6 @@ const Presupuesto = ({ viajeId, open, onClose, totalEstimado }) => {
         <DialogContent sx={{ backgroundColor: '#E3F2FD', py: 2 }}>
           {presupuesto ? (
             <>
-              <Typography variant="body1" color="#0D47A1">Estimado por persona: {presupuesto.totalEstimado.toFixed(2)}€</Typography>
               <Typography variant="body1" color="#0D47A1">Extra gastado: {presupuesto.totalGastado.toFixed(2)}€</Typography>
 
               <Divider sx={{ my: 2, backgroundColor: '#90CAF9' }} />

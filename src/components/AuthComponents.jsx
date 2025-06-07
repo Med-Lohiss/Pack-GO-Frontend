@@ -113,6 +113,7 @@ export const Input = styled.input`
   padding: 12px 15px;
   margin: 8px 0;
   width: 100%;
+  color: black;
 
   @media (max-width: 768px) {
     font-size: 14px;
