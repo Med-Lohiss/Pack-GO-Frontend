@@ -35,6 +35,7 @@ const ToggleButton = styled.button`
   align-items: center;
   justify-content: center;
   outline: none;
+  color: #000;
   -webkit-tap-highlight-color: transparent;
 
   &:focus {
