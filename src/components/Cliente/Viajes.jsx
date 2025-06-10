@@ -304,7 +304,7 @@ const Viajes = () => {
                     {editando ? 'Editar Viaje' : 'Nuevo Viaje'}
                 </DialogTitle>
                 <DialogContent>
-                    {['titulo', 'descripcion', 'ubicacion (Precisa)'].map((campo) => (
+                    {['titulo', 'descripcion', 'ubicacion'].map((campo) => (
                         <TextField
                             key={campo}
                             margin="dense"
